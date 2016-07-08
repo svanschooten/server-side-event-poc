@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Server Side Events!</title>
+    <style>
+        .container {
+            margin: 2px;
+            border: 1px solid gray;
+            border-radius: 3px;
+            padding: 1em;
+            background: lightgray;
+        }
+        .id {
+            color: darkgray;
+        }
+    </style>
+</head>
+<body>
+    <div id="events"></div>
+    <script type="application/javascript">
+        if (!!window.EventSource) {
+            var source = new EventSource('stream');
+            var element = document.getElementById("events");
+            source.addEventListener('message', function(e) {
+                console.log(e);
+                var container = document.createElement('div');
+                container.classList.add('container');
+                var id = document.createElement('p');
+                id.classList.add('id');
+                id.innerHTML = e.lastEventId;
+                container.appendChild(id);
+                var message = document.createElement('p');
+                message.classList.add('message');
+                message.innerHTML = e.data;
+                container.appendChild(message);
+                element.appendChild(container);
+            }, false);
+
+
+            source.addEventListener('alert', function(e) {
+                console.log(e);
+                alert(e.data);
+            });
+
+            source.addEventListener('open', function() {
+                console.log("Connection started");
+            }, false);
+
+            source.addEventListener('error', function(e) {
+                if (e.readyState == EventSource.CLOSED) {
+                    console.log("Connection closed");
+                }
+            }, false);
+        }
+    </script>
+</body>
+</html>
